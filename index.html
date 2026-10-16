@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EXEcheINZ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07070c;
+      --text: #e8e8f0;
+      --muted: #7a7a90;
+      --accent-1: #7c3aed;
+      --accent-2: #06b6d4;
+      --accent-3: #ec4899;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body { height: 100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Плавающие цветные пятна на фоне */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      opacity: 0.45;
+      animation: float 18s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .blob.b1 { width: 420px; height: 420px; background: var(--accent-1); top: -120px; left: -100px; }
+    .blob.b2 { width: 360px; height: 360px; background: var(--accent-2); bottom: -120px; right: -80px; animation-delay: -6s; }
+    .blob.b3 { width: 280px; height: 280px; background: var(--accent-3); top: 50%; left: 60%; animation-delay: -12s; opacity: 0.25; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, 40px) scale(1.1); }
+      66% { transform: translate(-40px, 60px) scale(0.95); }
+    }
+
+    /* Тонкая сетка поверх фона */
+    .grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 56px 48px;
+      margin: 0 16px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      animation: appear 1.2s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    @keyframes appear {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .hello {
+      font-weight: 300;
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+
+    .name {
+      font-weight: 800;
+      font-size: clamp(2.6rem, 9vw, 6rem);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shine 8s linear infinite;
+    }
+
+    @keyframes shine {
+      to { background-position: 300% 0; }
+    }
+
+    .tag {
+      margin-top: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+    .tag .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1em;
+      background: var(--accent-2);
+      vertical-align: text-bottom;
+      margin-left: 4px;
+      animation: blink 1s steps(1) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <div class="grid"></div>
+
+  <main class="card">
+    <p class="hello">Привет, это</p>
+    <h1 class="name">EXEcheINZ</h1>
+    <p class="tag">&gt; сайт в разработке<span class="cursor"></span></p>
+  </main>
+</body>
+</html>
