@@ -7,7 +7,7 @@
   <title>Вход</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=JetBrains+Mono:wght@400&family=Unbounded:wght@800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #07070c;
@@ -17,6 +17,22 @@
       --accent-2: #06b6d4;
       --accent-3: #ec4899;
       --error: #f87171;
+      --focus-ring: rgba(6, 182, 212, 0.2);
+      transition: --accent-1 .6s ease, --accent-2 .6s ease, --accent-3 .6s ease, --focus-ring .6s ease;
+    }
+
+    /* Регистрируем цвета, чтобы они плавно анимировались */
+    @property --accent-1 { syntax: '<color>'; inherits: true; initial-value: #7c3aed; }
+    @property --accent-2 { syntax: '<color>'; inherits: true; initial-value: #06b6d4; }
+    @property --accent-3 { syntax: '<color>'; inherits: true; initial-value: #ec4899; }
+    @property --focus-ring { syntax: '<color>'; inherits: true; initial-value: rgba(6, 182, 212, 0.2); }
+
+    /* Неверный пароль: вся гамма уходит в красный */
+    :root.denied {
+      --accent-1: #b91c1c;
+      --accent-2: #ef4444;
+      --accent-3: #f97316;
+      --focus-ring: rgba(239, 68, 68, 0.25);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -63,15 +79,18 @@
 
     form {
       position: relative;
-      z-index: 1;
+      z-index: 10;
       width: min(380px, calc(100% - 32px));
       padding: 40px 32px;
       border-radius: 24px;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+      background: rgba(14, 14, 22, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
+      box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.08) inset,
+        0 40px 100px rgba(0, 0, 0, 0.7),
+        0 0 0 1px rgba(0, 0, 0, 0.4);
       text-align: center;
       animation: appear 0.9s cubic-bezier(.2,.8,.2,1) both;
     }
@@ -110,7 +129,7 @@
     }
     input:focus {
       border-color: var(--accent-2);
-      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
 
     button {
@@ -141,8 +160,100 @@
 
     .error { color: var(--error); font-size: 0.85rem; min-height: 1.2em; margin-top: 12px; }
 
+    /* Маленький шар, который плывёт за курсором */
+    #orb {
+      position: fixed;
+      top: 0; left: 0;
+      width: 180px; height: 180px;
+      margin: -90px 0 0 -90px;
+      background: var(--accent-1);
+      filter: blur(60px);
+      opacity: 0;
+      animation: none;
+      transition: opacity .6s;
+      will-change: transform;
+      z-index: 0;
+    }
+    #orb.on { opacity: 0.55; }
+
+    /* ===== Cyberpunk-переход ===== */
+    form.glitch-out { animation: glitch-out .65s steps(7) forwards; }
+    @keyframes glitch-out {
+      0%   { transform: none; filter: none; opacity: 1; }
+      15%  { transform: translate(-6px, 2px) skewX(8deg); filter: hue-rotate(90deg); clip-path: inset(10% 0 40% 0); }
+      30%  { transform: translate(8px, -3px); filter: hue-rotate(-90deg) saturate(3); clip-path: inset(50% 0 5% 0); }
+      45%  { transform: translate(-3px, 0) skewX(-12deg); clip-path: inset(0 0 70% 0); }
+      60%  { transform: translate(10px, 1px); filter: invert(1); clip-path: inset(30% 0 30% 0); }
+      80%  { transform: scaleY(0.05); opacity: .8; clip-path: none; filter: none; }
+      100% { transform: scaleY(0) scaleX(1.4); opacity: 0; }
+    }
+
+    #cyber {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      padding: 16px;
+      background:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 3px),
+        radial-gradient(ellipse at center, #10101c 0%, #05050a 70%);
+      animation: cy-flicker .45s steps(3);
+    }
+    @keyframes cy-flicker {
+      0% { opacity: 0; } 33% { opacity: .7; } 66% { opacity: .2; } 100% { opacity: 1; }
+    }
+
+    .cy-log {
+      width: min(460px, 100%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(0.7rem, 2.6vw, 0.85rem);
+      color: #00f0ff;
+      text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+      line-height: 1.8;
+      white-space: pre;
+    }
+
+    .cy-title {
+      position: relative;
+      font-family: 'Unbounded', 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.4rem, 6vw, 3rem);
+      letter-spacing: 0.04em;
+      color: #fcee0a;
+      text-shadow: 3px 0 #ff2a6d, -3px 0 #00f0ff, 0 0 24px rgba(252, 238, 10, 0.45);
+      min-height: 1.2em;
+      text-align: center;
+    }
+    #cyber.granted .cy-title { animation: cy-jitter 1.2s steps(2) infinite; }
+    @keyframes cy-jitter {
+      0%, 90%, 100% { transform: none; }
+      92% { transform: translate(-3px, 1px) skewX(-6deg); text-shadow: -4px 0 #ff2a6d, 4px 0 #00f0ff; }
+      95% { transform: translate(3px, -1px); }
+    }
+
+    .cy-bar {
+      width: min(460px, 100%);
+      height: 4px;
+      background: rgba(252, 238, 10, 0.12);
+      clip-path: polygon(0 0, 100% 0, 98% 100%, 0 100%);
+    }
+    .cy-bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: #fcee0a;
+      box-shadow: 0 0 12px #fcee0a;
+    }
+    #cyber .cy-bar i { animation: cy-load 2.6s cubic-bezier(.7, 0, .3, 1) forwards; }
+    @keyframes cy-load { to { width: 100%; } }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
+      #orb { display: none; }
     }
   </style>
 </head>
@@ -150,6 +261,7 @@
   <div class="blob b1"></div>
   <div class="blob b2"></div>
   <div class="grid"></div>
+  <div class="blob" id="orb"></div>
 
   <form id="login" autocomplete="off">
     <div class="lock">
@@ -164,7 +276,47 @@
   </form>
 
   <script>
-    const PAYLOAD = {"salt":"aOB0A0CKBINZR7EKRukjig==","iv":"pnZ0Q9wzbezjRePx","iterations":600000,"data":"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"};
+    // Шар, который плывёт за курсором и переливается цветами сайта
+    (() => {
+      const orb = document.getElementById('orb');
+      const colors = [[124, 58, 237], [6, 182, 212], [236, 72, 153]];
+      const target = { x: innerWidth / 2, y: innerHeight / 2 };
+      const pos = { ...target };
+
+      addEventListener('pointermove', (e) => {
+        target.x = e.clientX;
+        target.y = e.clientY;
+        orb.classList.add('on');
+      });
+      document.addEventListener('pointerleave', () => orb.classList.remove('on'));
+
+      function colorAt(t) {
+        const f = (t % 1) * colors.length;
+        const i = Math.floor(f), k = f - i;
+        const a = colors[i], b = colors[(i + 1) % colors.length];
+        return a.map((v, j) => Math.round(v + (b[j] - v) * k));
+      }
+
+      // При неверном пароле шар плавно краснеет и потом возвращает цвет
+      const RED = [239, 68, 68];
+      let red = 0;
+
+      function frame(now) {
+        pos.x += (target.x - pos.x) * 0.08;
+        pos.y += (target.y - pos.y) * 0.08;
+        orb.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+        const wantRed = document.documentElement.classList.contains('denied') ? 1 : 0;
+        red += (wantRed - red) * 0.06;
+        const c = colorAt(now / 9000).map((v, j) => Math.round(v + (RED[j] - v) * red));
+        orb.style.background = `rgb(${c.join(', ')})`;
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    })();
+  </script>
+
+  <script>
+    const PAYLOAD = {"salt":"lBxbExSoKRKUEBnyOnwXkA==","iv":"twTmD549jfMORdU8","iterations":600000,"data":"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"};
     const STORE_KEY = 'site-key-' + PAYLOAD.salt;
 
     const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -184,6 +336,119 @@
     async function decryptWith(key) {
       const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(PAYLOAD.iv) }, key, b64(PAYLOAD.data));
       return new TextDecoder().decode(plain);
+    }
+
+    // ===== Переход в стиле cyberpunk =====
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+    const GLYPHS = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЩЭЮЯ0123456789#$%&*<>/\\|=+';
+
+    // Печатает строку посимвольно
+    async function typeText(el, text, ms) {
+      const step = ms / text.length;
+      for (let i = 1; i <= text.length; i++) {
+        el.textContent = text.slice(0, i);
+        await sleep(step);
+      }
+    }
+
+    // Текст «расшифровывается» из случайных символов слева направо
+    function scramble(el, text, ms) {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        function frame(now) {
+          const p = Math.min(1, (now - start) / ms);
+          const fixed = Math.floor(text.length * p);
+          let out = text.slice(0, fixed);
+          for (let i = fixed; i < text.length; i++) {
+            out += text[i] === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          }
+          el.textContent = out;
+          el.dataset.text = out;
+          if (p < 1) requestAnimationFrame(frame);
+          else resolve();
+        }
+        requestAnimationFrame(frame);
+      });
+    }
+
+    // Этап 1: панель глючит, появляется терминал и «ДОСТУП РАЗРЕШЁН»
+    async function playAccess() {
+      form.classList.add('glitch-out');
+      await sleep(650);
+
+      const ov = document.createElement('div');
+      ov.id = 'cyber';
+      ov.innerHTML = '<div class="cy-log"></div><h2 class="cy-title"></h2><div class="cy-bar"><i></i></div>';
+      document.body.appendChild(ov);
+      const log = ov.querySelector('.cy-log');
+
+      const lines = [
+        '> установка соединения ........ OK',
+        '> проверка ключа AES-256 ...... OK',
+        '> расшифровка данных .......... OK',
+        '> загрузка интерфейса',
+      ];
+      for (const line of lines) {
+        const p = document.createElement('p');
+        log.appendChild(p);
+        await typeText(p, line, 320);
+      }
+
+      ov.classList.add('granted');
+      await scramble(ov.querySelector('.cy-title'), 'ДОСТУП РАЗРЕШЁН', 1100);
+      await sleep(1000);
+    }
+
+    // Этап 2 (выполняется уже на странице с приветствием): экран рвётся на полосы
+    function revealCyber() {
+      const st = document.createElement('style');
+      st.textContent = `
+        .cy-strip {
+          position: fixed; left: 0; width: 100%;
+          z-index: 1000; pointer-events: none;
+          background: #05050a repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 3px);
+          animation: cy-tear .8s steps(8) forwards;
+        }
+        @keyframes cy-tear {
+          0%   { transform: translateX(0); }
+          35%  { transform: translateX(var(--j)); }
+          100% { transform: translateX(var(--x)); opacity: 0; }
+        }
+        html.cy-in body { animation: cy-shift .85s steps(6); }
+        @keyframes cy-shift {
+          0%   { filter: hue-rotate(90deg) saturate(3); transform: translateX(-8px); }
+          40%  { filter: hue-rotate(-60deg); transform: translateX(6px); }
+          100% { filter: none; transform: none; }
+        }`;
+      document.head.appendChild(st);
+
+      const N = 18, h = innerHeight / N;
+      const neon = ['#00f0ff', '#ff2a6d', '#fcee0a'];
+      const strips = [];
+      for (let i = 0; i < N; i++) {
+        const d = document.createElement('div');
+        d.className = 'cy-strip';
+        d.style.top = `${i * h}px`;
+        d.style.height = `${h + 1}px`;
+        d.style.borderTop = `1px solid ${neon[i % 3]}`;
+        d.style.setProperty('--j', `${(Math.random() - 0.5) * 80}px`);
+        d.style.setProperty('--x', `${Math.random() < 0.5 ? -110 : 110}vw`);
+        d.style.animationDelay = `${Math.random() * 500}ms`;
+        document.body.appendChild(d);
+        strips.push(d);
+      }
+      document.documentElement.classList.add('cy-in');
+      setTimeout(() => {
+        strips.forEach((d) => d.remove());
+        st.remove();
+        document.documentElement.classList.remove('cy-in');
+      }, 1500);
+    }
+
+    async function enterSite(html) {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return show(html);
+      await playAccess();
+      show(html + `\n<script>(${revealCyber.toString()})();<\/script>`);
     }
 
     function show(html) {
@@ -218,6 +483,7 @@
     const pw = document.getElementById('pw');
     const btn = document.getElementById('btn');
     const err = document.getElementById('err');
+    let deniedTimer;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -234,9 +500,13 @@
         const raw = toB64(await crypto.subtle.exportKey('raw', key));
         const kind = document.getElementById('remember').checked ? 'localStorage' : 'sessionStorage';
         try { storage(kind).setItem(STORE_KEY, raw); } catch {}
-        show(html);
+        btn.textContent = 'Вход…';
+        await enterSite(html);
       } catch {
         err.textContent = 'Неверный пароль';
+        document.documentElement.classList.add('denied');
+        clearTimeout(deniedTimer);
+        deniedTimer = setTimeout(() => document.documentElement.classList.remove('denied'), 1600);
         form.classList.remove('shake');
         void form.offsetWidth;
         form.classList.add('shake');
