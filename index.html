@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EXEcheINZ</title>
+  <meta name="robots" content="noindex">
+  <title>Вход</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
@@ -15,10 +16,10 @@
       --accent-1: #7c3aed;
       --accent-2: #06b6d4;
       --accent-3: #ec4899;
+      --error: #f87171;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
-
     html, body { height: 100%; }
 
     body {
@@ -32,18 +33,16 @@
       position: relative;
     }
 
-    /* Плавающие цветные пятна на фоне */
     .blob {
       position: absolute;
       border-radius: 50%;
       filter: blur(100px);
-      opacity: 0.45;
+      opacity: 0.35;
       animation: float 18s ease-in-out infinite;
       pointer-events: none;
     }
     .blob.b1 { width: 420px; height: 420px; background: var(--accent-1); top: -120px; left: -100px; }
     .blob.b2 { width: 360px; height: 360px; background: var(--accent-2); bottom: -120px; right: -80px; animation-delay: -6s; }
-    .blob.b3 { width: 280px; height: 280px; background: var(--accent-3); top: 50%; left: 60%; animation-delay: -12s; opacity: 0.25; }
 
     @keyframes float {
       0%, 100% { transform: translate(0, 0) scale(1); }
@@ -51,7 +50,6 @@
       66% { transform: translate(-40px, 60px) scale(0.95); }
     }
 
-    /* Тонкая сетка поверх фона */
     .grid {
       position: absolute;
       inset: 0;
@@ -63,67 +61,85 @@
       -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
     }
 
-    .card {
+    form {
       position: relative;
       z-index: 1;
-      text-align: center;
-      padding: 56px 48px;
-      margin: 0 16px;
+      width: min(380px, calc(100% - 32px));
+      padding: 40px 32px;
       border-radius: 24px;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-      animation: appear 1.2s cubic-bezier(.2,.8,.2,1) both;
+      text-align: center;
+      animation: appear 0.9s cubic-bezier(.2,.8,.2,1) both;
     }
-
     @keyframes appear {
       from { opacity: 0; transform: translateY(24px) scale(0.98); }
       to   { opacity: 1; transform: none; }
     }
-
-    .hello {
-      font-weight: 300;
-      font-size: clamp(1.2rem, 3vw, 1.8rem);
-      color: var(--muted);
-      letter-spacing: 0.04em;
-      margin-bottom: 12px;
+    form.shake { animation: shake 0.4s; }
+    @keyframes shake {
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
     }
 
-    .name {
-      font-weight: 800;
-      font-size: clamp(2.6rem, 9vw, 6rem);
-      line-height: 1;
-      letter-spacing: -0.02em;
-      background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
-      background-size: 300% 100%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: shine 8s linear infinite;
+    .lock {
+      width: 52px; height: 52px;
+      margin: 0 auto 20px;
+      border-radius: 16px;
+      display: grid; place-items: center;
+      background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
     }
 
-    @keyframes shine {
-      to { background-position: 300% 0; }
-    }
+    h1 { font-weight: 600; font-size: 1.4rem; margin-bottom: 6px; }
+    .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
 
-    .tag {
-      margin-top: 24px;
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.35);
+      color: var(--text);
+      font: inherit;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input:focus {
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+    }
+
+    button {
+      margin-top: 14px;
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 12px;
+      font: inherit;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+      transition: opacity .2s, transform .1s;
+    }
+    button:hover { opacity: 0.9; }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.5; cursor: wait; }
+
+    .remember {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      margin-top: 16px;
       color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
     }
-    .tag .cursor {
-      display: inline-block;
-      width: 8px;
-      height: 1em;
-      background: var(--accent-2);
-      vertical-align: text-bottom;
-      margin-left: 4px;
-      animation: blink 1s steps(1) infinite;
-    }
-    @keyframes blink { 50% { opacity: 0; } }
+    .remember input { width: auto; accent-color: var(--accent-2); }
+
+    .error { color: var(--error); font-size: 0.85rem; min-height: 1.2em; margin-top: 12px; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; }
@@ -133,13 +149,102 @@
 <body>
   <div class="blob b1"></div>
   <div class="blob b2"></div>
-  <div class="blob b3"></div>
   <div class="grid"></div>
 
-  <main class="card">
-    <p class="hello">Привет, это</p>
-    <h1 class="name">EXEcheINZ</h1>
-    <p class="tag">&gt; сайт в разработке<span class="cursor"></span></p>
-  </main>
+  <form id="login" autocomplete="off">
+    <div class="lock">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    </div>
+    <h1>Закрытый сайт</h1>
+    <p class="sub">Введите пароль, чтобы войти</p>
+    <input id="pw" type="password" placeholder="Пароль" autofocus required>
+    <button id="btn" type="submit">Войти</button>
+    <label class="remember"><input id="remember" type="checkbox"> Запомнить на этом устройстве</label>
+    <p class="error" id="err"></p>
+  </form>
+
+  <script>
+    const PAYLOAD = {"salt":"aOB0A0CKBINZR7EKRukjig==","iv":"pnZ0Q9wzbezjRePx","iterations":600000,"data":"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"};
+    const STORE_KEY = 'site-key-' + PAYLOAD.salt;
+
+    const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+    const toB64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+
+    async function deriveKey(password) {
+      const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: b64(PAYLOAD.salt), iterations: PAYLOAD.iterations, hash: 'SHA-256' },
+        base,
+        { name: 'AES-GCM', length: 256 },
+        true,
+        ['decrypt']
+      );
+    }
+
+    async function decryptWith(key) {
+      const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(PAYLOAD.iv) }, key, b64(PAYLOAD.data));
+      return new TextDecoder().decode(plain);
+    }
+
+    function show(html) {
+      document.open();
+      document.write(html);
+      document.close();
+    }
+
+    function storage(kind) {
+      try { return window[kind]; } catch { return null; }
+    }
+
+    // Если ключ уже сохранён — входим сразу
+    (async () => {
+      if (!window.crypto || !crypto.subtle) return;
+      for (const kind of ['sessionStorage', 'localStorage']) {
+        const s = storage(kind);
+        let saved = null;
+        try { saved = s && s.getItem(STORE_KEY); } catch {}
+        if (!saved) continue;
+        try {
+          const key = await crypto.subtle.importKey('raw', b64(saved), 'AES-GCM', false, ['decrypt']);
+          show(await decryptWith(key));
+          return;
+        } catch {
+          try { s.removeItem(STORE_KEY); } catch {}
+        }
+      }
+    })();
+
+    const form = document.getElementById('login');
+    const pw = document.getElementById('pw');
+    const btn = document.getElementById('btn');
+    const err = document.getElementById('err');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      err.textContent = '';
+      if (!window.crypto || !crypto.subtle) {
+        err.textContent = 'Браузер не поддерживает расшифровку: откройте сайт по https://';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = 'Проверка…';
+      try {
+        const key = await deriveKey(pw.value);
+        const html = await decryptWith(key);
+        const raw = toB64(await crypto.subtle.exportKey('raw', key));
+        const kind = document.getElementById('remember').checked ? 'localStorage' : 'sessionStorage';
+        try { storage(kind).setItem(STORE_KEY, raw); } catch {}
+        show(html);
+      } catch {
+        err.textContent = 'Неверный пароль';
+        form.classList.remove('shake');
+        void form.offsetWidth;
+        form.classList.add('shake');
+        pw.select();
+        btn.disabled = false;
+        btn.textContent = 'Войти';
+      }
+    });
+  </script>
 </body>
 </html>
