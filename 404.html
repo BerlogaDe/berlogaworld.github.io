@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Берлога</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #05040a; --text: #e6f7ff; --muted: #6b7a99;
+      --y: #fcee0a; --c: #00f0ff; --m: #ff2a6d; --v: #8b5cf6; --g: #39ff88;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { background: var(--bg); }
+    body {
+      min-height: 100vh; padding: 28px 16px 40px; color: var(--text); background: var(--bg);
+      font-family: 'Inter', system-ui, sans-serif; overflow-x: hidden; position: relative;
+      display: grid; place-items: center;
+    }
+
+    /* Фон: тот же неоновый горизонт, что и на странице техработ, только в красной тревоге */
+    .sky { position: fixed; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 45% at 15% 10%, rgba(255, 42, 109, 0.28), transparent 70%),
+        radial-gradient(ellipse 55% 45% at 90% 20%, rgba(0, 240, 255, 0.14), transparent 70%),
+        radial-gradient(ellipse 70% 40% at 50% 105%, rgba(255, 42, 109, 0.3), transparent 70%); }
+    .floor { position: fixed; left: -50%; right: -50%; bottom: -10vh; height: 55vh; pointer-events: none;
+      background:
+        linear-gradient(rgba(255, 42, 109, 0.55) 1.5px, transparent 1.5px) 0 0 / 100% 48px,
+        linear-gradient(90deg, rgba(0, 240, 255, 0.4) 1.5px, transparent 1.5px) 0 0 / 64px 100%;
+      transform: perspective(380px) rotateX(62deg); transform-origin: 50% 100%;
+      mask-image: linear-gradient(transparent, #000 45%); -webkit-mask-image: linear-gradient(transparent, #000 45%);
+      animation: drive 2.4s linear infinite reverse; opacity: .5; }
+    @keyframes drive { to { background-position: 0 48px, 0 0; } }
+    .scan { position: fixed; inset: 0; pointer-events: none; z-index: 50;
+      background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px); mix-blend-mode: multiply; }
+    .scan::after { content: ''; position: absolute; left: 0; right: 0; height: 120px; top: -120px;
+      background: linear-gradient(transparent, rgba(255, 42, 109, 0.07), transparent); animation: sweep 5s linear infinite; }
+    @keyframes sweep { to { top: 100%; } }
+
+    .panel { position: relative; z-index: 2; width: min(640px, 100%); padding: 28px 28px 26px; background: rgba(8, 10, 20, 0.8);
+      clip-path: polygon(0 0, calc(100% - 26px) 0, 100% 26px, 100% 100%, 26px 100%, 0 calc(100% - 26px));
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+    .panel::before { content: ''; position: absolute; inset: 0; pointer-events: none; padding: 1.5px;
+      background: linear-gradient(135deg, var(--m), transparent 35%, transparent 65%, var(--c));
+      clip-path: inherit; -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
+    .tape { height: 14px; margin: -28px -28px 22px; background: repeating-linear-gradient(-45deg, var(--m) 0 14px, #111 14px 28px); background-size: 39.6px 14px; animation: tape 1s linear infinite; }
+    @keyframes tape { to { background-position: 39.6px 0; } }
+
+    .tag { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: var(--y); }
+    .tag span { display: inline-flex; align-items: center; gap: 8px; }
+    .tag i { width: 8px; height: 8px; background: var(--m); box-shadow: 0 0 10px var(--m); animation: blink .8s steps(1) infinite; }
+    .tag b { color: var(--m); font-weight: 700; }
+    @keyframes blink { 50% { opacity: .15; } }
+
+    /* Огромный глитчевый код ошибки */
+    .code { position: relative; margin: 10px 0 2px; font-family: 'Orbitron', sans-serif; font-weight: 900; line-height: .95;
+      font-size: clamp(5.5rem, 27vw, 11rem); letter-spacing: .02em; color: transparent;
+      -webkit-text-stroke: 2px var(--c); text-shadow: 0 0 24px rgba(0, 240, 255, 0.45); }
+    .code .fill { position: absolute; inset: 0; color: var(--text); -webkit-text-stroke: 0; text-shadow: 0 0 18px rgba(0, 240, 255, 0.6), 0 0 2px #fff;
+      clip-path: inset(0 0 52% 0); animation: drain 4s ease-in-out infinite; }
+    @keyframes drain { 0%, 100% { clip-path: inset(0 0 52% 0); } 50% { clip-path: inset(0 0 30% 0); } }
+    .code::before, .code::after { content: attr(data-t); position: absolute; inset: 0; pointer-events: none; -webkit-text-stroke: 0; text-shadow: none; clip-path: inset(0 0 100% 0); }
+    .code::before { color: var(--m); animation: gl1 2.6s infinite steps(1); }
+    .code::after { color: var(--c); animation: gl2 2.6s infinite steps(1); }
+    @keyframes gl1 { 0%, 80%, 100% { clip-path: inset(0 0 100% 0); transform: none; } 81% { clip-path: inset(10% 0 62% 0); transform: translate(-8px, 2px); } 85% { clip-path: inset(55% 0 15% 0); transform: translate(6px, -2px); } 89% { clip-path: inset(30% 0 45% 0); transform: translate(-3px, 0); } }
+    @keyframes gl2 { 0%, 82%, 100% { clip-path: inset(0 0 100% 0); transform: none; } 83% { clip-path: inset(38% 0 32% 0); transform: translate(8px, -2px); } 87% { clip-path: inset(4% 0 78% 0); transform: translate(-6px, 2px); } 91% { clip-path: inset(72% 0 4% 0); transform: translate(4px, 0); } }
+
+    .sub { font-family: 'Orbitron', sans-serif; font-weight: 600; font-size: clamp(.78rem, 2.6vw, .95rem); letter-spacing: .3em; text-transform: uppercase; color: var(--m); text-shadow: 0 0 12px rgba(255, 42, 109, 0.6); }
+    h1 { margin-top: 16px; font-size: clamp(1.15rem, 4vw, 1.45rem); font-weight: 600; }
+    .msg { margin-top: 8px; color: #b9c6dd; line-height: 1.6; font-size: .95rem; }
+
+    .term { margin-top: 18px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: .76rem; line-height: 1.7; color: var(--g);
+      background: rgba(0, 0, 0, 0.55); border-left: 2px solid var(--m); text-shadow: 0 0 6px rgba(57, 255, 136, 0.45); overflow: hidden;
+      height: calc(6 * 1.7em + 24px); /* 5 строк + курсор — консоль не меняет размер страницы */ }
+    .term div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .term .w { color: var(--y); text-shadow: 0 0 6px rgba(252, 238, 10, 0.5); }
+    .term .e { color: var(--m); text-shadow: 0 0 6px rgba(255, 42, 109, 0.5); }
+    .term .p { color: var(--c); text-shadow: 0 0 6px rgba(0, 240, 255, 0.5); }
+    .term .cur { display: inline-block; width: 8px; height: 13px; vertical-align: -2px; background: var(--g); animation: blink 1s steps(1) infinite; }
+
+    .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; cursor: pointer;
+      padding: 13px 24px; color: var(--bg); background: var(--c); border: 0; box-shadow: 0 0 18px rgba(0, 240, 255, 0.55);
+      clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%); transition: background .15s, transform .15s, box-shadow .15s; }
+    .btn:hover { background: var(--y); box-shadow: 0 0 22px rgba(252, 238, 10, 0.6); transform: translateY(-1px); }
+    .btn.ghost { color: var(--m); background: rgba(255, 42, 109, 0.1); box-shadow: inset 0 0 0 1px rgba(255, 42, 109, 0.5); }
+    .btn.ghost:hover { color: var(--bg); background: var(--m); box-shadow: 0 0 18px rgba(255, 42, 109, 0.6); }
+    .foot { margin-top: 16px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: .68rem; color: var(--muted); }
+
+    @media (prefers-reduced-motion: reduce) { .floor, .scan::after, .code::before, .code::after, .code .fill, .tape { animation: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="sky"></div><div class="floor"></div><div class="scan"></div>
+
+  <main class="panel">
+    <div class="tape" aria-hidden="true"></div>
+    <div class="tag"><span><i></i>berloga.sys // route error</span><b>ERR_404</b></div>
+    <div class="code" data-t="404" aria-label="404">404<span class="fill" aria-hidden="true">404</span></div>
+    <div class="sub">signal lost</div>
+    <h1>Такой комнаты в берлоге нет</h1>
+    <p class="msg">Ссылка устарела, в адресе опечатка — или бубля опять утащил страницу.</p>
+    <div class="term" id="term" aria-hidden="true"></div>
+    <div class="row">
+      <a class="btn" id="home" href="/">← В берлогу</a>
+      <button class="btn ghost" type="button" onclick="history.length > 1 ? history.back() : location.assign(document.getElementById('home').href)">Назад</button>
+    </div>
+    <div class="foot"><span>// код ошибки: ROUTE_NOT_FOUND</span><span id="clock"></span></div>
+  </main>
+
+  <script>
+    (() => {
+      const path = decodeURIComponent(location.pathname);
+      const esc = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+      const LINES = [
+        [`> resolve ${esc(path)}`, 'p'],
+        ['[ .. ] поиск маршрута в берлоге', ''],
+        ['[ err] маршрут не найден', 'e'],
+        ['[ .. ] проверяем, не бубля ли это', ''],
+        ['[warn] следы бубли обнаружены', 'w'],
+        ['[ .. ] спрашиваем, где лево, а где право', ''],
+        ['[ err] никто не знает', 'e'],
+        ['[ ok ] рекомендация: вернуться в берлогу', ''],
+      ];
+      const term = document.getElementById('term');
+      let n = 0;
+      const tick = () => {
+        n = Math.min(n + 1, LINES.length);
+        term.innerHTML = LINES.slice(Math.max(0, n - 5), n).map(([t, c]) => `<div class="${c}">${t}</div>`).join('') + '<span class="cur"></span>';
+        if (n === LINES.length) n = 0;
+      };
+      tick();
+      setInterval(tick, 1100);
+
+      const clock = document.getElementById('clock');
+      const t = () => { clock.textContent = new Date().toLocaleTimeString('ru-RU'); };
+      t();
+      setInterval(t, 1000);
+    })();
+
+    // GitHub Pages показывает этот файл на любом несуществующем адресе. Если сайт лежит не в корне домена
+    // (user.github.io/репозиторий/…), ведём кнопку в папку репозитория, когда она существует.
+    (async () => {
+      const seg = location.pathname.split('/').filter(Boolean)[0];
+      if (!seg || !location.hostname.endsWith('github.io')) return;
+      try {
+        const r = await fetch('/' + seg + '/', { method: 'HEAD', cache: 'no-store' });
+        if (r.ok) document.getElementById('home').href = '/' + seg + '/';
+      } catch {}
+    })();
+  </script>
+</body>
+</html>
